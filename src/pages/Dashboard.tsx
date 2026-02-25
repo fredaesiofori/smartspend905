@@ -1,10 +1,11 @@
-import { TrendingUp, TrendingDown, Wallet, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, Target, AlertTriangle } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import StatCard from '@/components/StatCard';
 import TransactionForm from '@/components/TransactionForm';
 import FinancialTips from '@/components/FinancialTips';
 import SponsoredCard from '@/components/SponsoredCard';
 import AdPlaceholder from '@/components/AdPlaceholder';
+import AIInsights from '@/components/AIInsights';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 
@@ -22,6 +23,21 @@ const Dashboard = () => {
         </div>
         <TransactionForm />
       </div>
+
+      {/* Budget Alert at 80% */}
+      {budgetProgress >= 80 && (
+        <div className={`flex items-center gap-3 p-4 rounded-lg border ${budgetProgress > 100 ? 'bg-expense/10 border-expense/20' : 'bg-warning/10 border-warning/20'}`}>
+          <AlertTriangle className={`h-5 w-5 ${budgetProgress > 100 ? 'text-expense' : 'text-warning'}`} />
+          <div>
+            <p className={`text-sm font-semibold ${budgetProgress > 100 ? 'text-expense' : 'text-warning'}`}>
+              {budgetProgress > 100 ? '🚨 Budget Exceeded!' : '⚠️ Budget Warning'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              You've used {budgetProgress.toFixed(0)}% of your {currencySymbol}{settings.monthlyBudget.toLocaleString()} monthly budget.
+            </p>
+          </div>
+        </div>
+      )}
 
       <AdPlaceholder variant="banner" />
 
@@ -46,6 +62,9 @@ const Dashboard = () => {
           <p className="text-xs text-expense mt-2 font-medium">⚠️ You're close to exceeding your monthly budget!</p>
         )}
       </div>
+
+      {/* AI Insights */}
+      <AIInsights />
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Recent Transactions */}

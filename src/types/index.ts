@@ -1,12 +1,15 @@
 export type TransactionType = 'income' | 'expense';
 
-export type Currency = 'GHS' | 'USD' | 'EUR' | 'GBP';
+export type Currency = 'GHS' | 'USD' | 'EUR' | 'GBP' | 'NGN' | 'ZAR' | 'KES';
 
 export const CURRENCY_SYMBOLS: Record<Currency, string> = {
   GHS: 'GH₵',
   USD: '$',
   EUR: '€',
   GBP: '£',
+  NGN: '₦',
+  ZAR: 'R',
+  KES: 'KSh',
 };
 
 export const CATEGORIES = {

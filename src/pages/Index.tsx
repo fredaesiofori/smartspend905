@@ -44,10 +44,10 @@ const Index = () => {
             <span className="text-lg font-bold text-foreground">SmartSpend</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button variant="ghost" size="sm">Login</Button>
             </Link>
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button size="sm" className="gap-1.5">Get Started <ArrowRight className="h-3.5 w-3.5" /></Button>
             </Link>
           </div>
@@ -68,7 +68,7 @@ const Index = () => {
                 SmartSpend helps you manage income, track expenses, and build better financial habits — all in one simple app.
               </motion.p>
               <motion.div variants={fadeUp} custom={2} className="flex flex-wrap gap-3">
-                <Link to="/dashboard">
+                <Link to="/auth">
                   <Button size="lg" className="gap-2 text-base px-6">
                     Start Tracking Free <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -180,7 +180,7 @@ const Index = () => {
                   </li>
                 ))}
               </ul>
-              <Link to="/dashboard">
+              <Link to="/auth">
                 <Button variant="outline" className="w-full mt-6">Get Started</Button>
               </Link>
             </div>
@@ -208,7 +208,7 @@ const Index = () => {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground">Ready to Take Control?</h2>
           <p className="text-primary-foreground/80 mt-4 text-lg">Join thousands of Ghanaians building better financial habits with SmartSpend.</p>
-          <Link to="/dashboard">
+          <Link to="/auth">
             <Button size="lg" variant="secondary" className="mt-8 text-base px-8 gap-2">
               Start Tracking Free <ArrowRight className="h-4 w-4" />
             </Button>
