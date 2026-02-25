@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Transaction, UserSettings, Currency, CURRENCY_SYMBOLS } from '@/types';
+import { useAuth } from './AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface AppContextType {
   transactions: Transaction[];
@@ -14,6 +17,7 @@ interface AppContextType {
   balance: number;
   monthlyExpenses: number;
   budgetProgress: number;
+  loadingData: boolean;
 }
 
 const defaultSettings: UserSettings = {
@@ -41,87 +45,158 @@ const loadFromStorage = <T,>(key: string, fallback: T): T => {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [transactions, setTransactions] = useState<Transaction[]>(() =>
-    loadFromStorage('smartspend_transactions', [])
-  );
-  const [settings, setSettings] = useState<UserSettings>(() =>
-    loadFromStorage('smartspend_settings', defaultSettings)
-  );
+  const { user, isGuest } = useAuth();
+  const { toast } = useToast();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+  const [loadingData, setLoadingData] = useState(true);
 
+  // Load data from Supabase when user is authenticated
   useEffect(() => {
-    localStorage.setItem('smartspend_transactions', JSON.stringify(transactions));
-  }, [transactions]);
+    if (isGuest) {
+      setTransactions(loadFromStorage('smartspend_transactions', []));
+      setSettings(loadFromStorage('smartspend_settings', defaultSettings));
+      setLoadingData(false);
+      return;
+    }
+    if (!user) {
+      setTransactions([]);
+      setSettings(defaultSettings);
+      setLoadingData(false);
+      return;
+    }
 
+    const loadData = async () => {
+      setLoadingData(true);
+      try {
+        // Load transactions
+        const { data: txData, error: txError } = await supabase
+          .from('transactions')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false });
+        if (txError) throw txError;
+        setTransactions(
+          (txData || []).map(t => ({
+            id: t.id,
+            amount: Number(t.amount),
+            type: t.type as 'income' | 'expense',
+            category: t.category,
+            date: t.date,
+            notes: t.notes || '',
+            createdAt: t.created_at,
+          }))
+        );
+
+        // Load profile/settings
+        const { data: profile, error: pError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (pError) throw pError;
+        if (profile) {
+          setSettings({
+            currency: (profile.currency as Currency) || 'GHS',
+            monthlyBudget: Number(profile.monthly_budget) || 5000,
+            darkMode: profile.dark_mode || false,
+            name: profile.name || 'User',
+          });
+        }
+      } catch (err) {
+        console.error('Error loading data:', err);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+    loadData();
+  }, [user, isGuest]);
+
+  // Apply dark mode
   useEffect(() => {
-    localStorage.setItem('smartspend_settings', JSON.stringify(settings));
     if (settings.darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [settings]);
+  }, [settings.darkMode]);
 
-  const addTransaction = useCallback((t: Omit<Transaction, 'id' | 'createdAt'>) => {
-    const newT: Transaction = {
-      ...t,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    setTransactions(prev => [newT, ...prev]);
-  }, []);
+  // Save guest data to localStorage
+  useEffect(() => {
+    if (isGuest) {
+      localStorage.setItem('smartspend_transactions', JSON.stringify(transactions));
+      localStorage.setItem('smartspend_settings', JSON.stringify(settings));
+    }
+  }, [transactions, settings, isGuest]);
 
-  const updateTransaction = useCallback((id: string, updates: Partial<Transaction>) => {
+  const addTransaction = useCallback(async (t: Omit<Transaction, 'id' | 'createdAt'>) => {
+    if (user && !isGuest) {
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert({ user_id: user.id, amount: t.amount, type: t.type, category: t.category, date: t.date, notes: t.notes || null })
+        .select()
+        .single();
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        return;
+      }
+      if (data) {
+        setTransactions(prev => [{
+          id: data.id, amount: Number(data.amount), type: data.type as 'income' | 'expense',
+          category: data.category, date: data.date, notes: data.notes || '', createdAt: data.created_at,
+        }, ...prev]);
+      }
+    } else {
+      const newT: Transaction = { ...t, id: crypto.randomUUID(), createdAt: new Date().toISOString() };
+      setTransactions(prev => [newT, ...prev]);
+    }
+  }, [user, isGuest, toast]);
+
+  const updateTransaction = useCallback(async (id: string, updates: Partial<Transaction>) => {
+    if (user && !isGuest) {
+      const { error } = await supabase.from('transactions').update(updates).eq('id', id).eq('user_id', user.id);
+      if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
+    }
     setTransactions(prev => prev.map(t => (t.id === id ? { ...t, ...updates } : t)));
-  }, []);
+  }, [user, isGuest, toast]);
 
-  const deleteTransaction = useCallback((id: string) => {
+  const deleteTransaction = useCallback(async (id: string) => {
+    if (user && !isGuest) {
+      const { error } = await supabase.from('transactions').delete().eq('id', id).eq('user_id', user.id);
+      if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
+    }
     setTransactions(prev => prev.filter(t => t.id !== id));
-  }, []);
+  }, [user, isGuest, toast]);
 
-  const updateSettings = useCallback((s: Partial<UserSettings>) => {
-    setSettings(prev => ({ ...prev, ...s }));
-  }, []);
+  const updateSettings = useCallback(async (s: Partial<UserSettings>) => {
+    const newSettings = { ...settings, ...s };
+    setSettings(newSettings);
+    if (user && !isGuest) {
+      const { error } = await supabase.from('profiles').update({
+        currency: newSettings.currency,
+        monthly_budget: newSettings.monthlyBudget,
+        dark_mode: newSettings.darkMode,
+        name: newSettings.name,
+      }).eq('id', user.id);
+      if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  }, [user, isGuest, settings, toast]);
 
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((s, t) => s + t.amount, 0);
-
-  const totalExpenses = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((s, t) => s + t.amount, 0);
-
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   const monthlyExpenses = transactions
-    .filter(t => {
-      const d = new Date(t.date);
-      return t.type === 'expense' && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    })
+    .filter(t => { const d = new Date(t.date); return t.type === 'expense' && d.getMonth() === currentMonth && d.getFullYear() === currentYear; })
     .reduce((s, t) => s + t.amount, 0);
-
   const balance = totalIncome - totalExpenses;
   const budgetProgress = settings.monthlyBudget > 0 ? (monthlyExpenses / settings.monthlyBudget) * 100 : 0;
   const currencySymbol = CURRENCY_SYMBOLS[settings.currency];
 
   return (
-    <AppContext.Provider
-      value={{
-        transactions,
-        settings,
-        addTransaction,
-        updateTransaction,
-        deleteTransaction,
-        updateSettings,
-        currencySymbol,
-        totalIncome,
-        totalExpenses,
-        balance,
-        monthlyExpenses,
-        budgetProgress,
-      }}
-    >
+    <AppContext.Provider value={{ transactions, settings, addTransaction, updateTransaction, deleteTransaction, updateSettings, currencySymbol, totalIncome, totalExpenses, balance, monthlyExpenses, budgetProgress, loadingData }}>
       {children}
     </AppContext.Provider>
   );

@@ -8,8 +8,11 @@ import {
   Menu,
   X,
   Wallet,
+  LogOut,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -22,6 +25,7 @@ const navItems = [
 const AppSidebar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, isGuest, signOut } = useAuth();
 
   return (
     <>
@@ -60,6 +64,16 @@ const AppSidebar = () => {
           </button>
         </div>
 
+        {/* User info */}
+        <div className="px-4 py-3 border-b border-border">
+          <p className="text-sm font-medium text-foreground truncate">
+            {isGuest ? 'Guest User' : user?.user_metadata?.full_name || user?.email || 'User'}
+          </p>
+          <p className="text-xs text-muted-foreground truncate">
+            {isGuest ? 'Limited access' : user?.email || ''}
+          </p>
+        </div>
+
         {/* Nav */}
         <nav className="flex-1 p-3 space-y-1">
           {navItems.map((item) => {
@@ -87,19 +101,34 @@ const AppSidebar = () => {
           })}
         </nav>
 
-        {/* Bottom CTA */}
-        <div className="p-4 border-t border-border">
-          <div className="rounded-lg bg-primary/5 p-3 text-center">
-            <p className="text-xs font-semibold text-primary">SmartSpend Premium</p>
-            <p className="text-[11px] text-muted-foreground mt-1">Unlock advanced analytics</p>
-            <Link
-              to="/upgrade"
-              onClick={() => setMobileOpen(false)}
-              className="mt-2 inline-block text-xs font-semibold text-primary hover:underline"
-            >
-              Upgrade Now →
-            </Link>
-          </div>
+        {/* Bottom */}
+        <div className="p-4 border-t border-border space-y-3">
+          {isGuest && (
+            <div className="rounded-lg bg-warning/10 p-3 text-center">
+              <p className="text-xs font-semibold text-warning">Guest Mode</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Data won't be saved</p>
+              <Link to="/auth" className="mt-2 inline-block text-xs font-semibold text-primary hover:underline">
+                Create Account →
+              </Link>
+            </div>
+          )}
+          {!isGuest && (
+            <div className="rounded-lg bg-primary/5 p-3 text-center">
+              <p className="text-xs font-semibold text-primary">SmartSpend Premium</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Unlock advanced analytics</p>
+              <Link to="/upgrade" onClick={() => setMobileOpen(false)} className="mt-2 inline-block text-xs font-semibold text-primary hover:underline">
+                Upgrade Now →
+              </Link>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground"
+            onClick={signOut}
+          >
+            <LogOut className="h-4 w-4" /> Sign Out
+          </Button>
         </div>
       </aside>
     </>

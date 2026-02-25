@@ -12,6 +12,9 @@ const currencies: { value: Currency; label: string }[] = [
   { value: 'USD', label: '🇺🇸 USD — US Dollar' },
   { value: 'EUR', label: '🇪🇺 EUR — Euro' },
   { value: 'GBP', label: '🇬🇧 GBP — British Pound' },
+  { value: 'NGN', label: '🇳🇬 NGN — Nigerian Naira' },
+  { value: 'ZAR', label: '🇿🇦 ZAR — South African Rand' },
+  { value: 'KES', label: '🇰🇪 KES — Kenyan Shilling' },
 ];
 
 const SettingsPage = () => {
