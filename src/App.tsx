@@ -13,6 +13,7 @@ import Transactions from "./pages/Transactions";
 import Reports from "./pages/Reports";
 import SettingsPage from "./pages/Settings";
 import Upgrade from "./pages/Upgrade";
+import Support from "./pages/Support";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/support" element={<Support />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

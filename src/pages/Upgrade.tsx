@@ -1,10 +1,14 @@
 import { CheckCircle, X, Crown, Zap, Shield, Palette, Download, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AffiliateSection from '@/components/AffiliateSection';
-import { Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 const features = [
   { icon: X, name: 'Remove All Ads', free: false, premium: true },
+  { icon: Zap, name: 'AI Smart Insights', free: false, premium: true },
   { icon: Zap, name: 'Advanced Analytics', free: false, premium: true },
   { icon: Download, name: 'Unlimited Exports', free: false, premium: true },
   { icon: Palette, name: 'Custom Categories', free: false, premium: true },
@@ -14,7 +18,47 @@ const features = [
   { icon: Shield, name: 'Monthly Reports', free: true, premium: true },
 ];
 
+const plans = [
+  { name: 'Monthly', price: 29, label: '/month', note: 'Cancel anytime', plan_id: 'monthly', highlight: false },
+  { name: 'Yearly', price: 19, label: '/month', note: 'Billed GH₵228/year', plan_id: 'yearly', highlight: true, save: 'Save 33%' },
+];
+
 const Upgrade = () => {
+  const { user, isGuest } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleCheckout = async (plan: typeof plans[0]) => {
+    if (isGuest || !user) {
+      toast({ title: 'Sign in required', description: 'Please create an account to upgrade.', variant: 'destructive' });
+      return;
+    }
+
+    setLoading(plan.plan_id);
+    try {
+      const amount = plan.plan_id === 'yearly' ? 228 : 29;
+      const { data, error } = await supabase.functions.invoke('initialize-payment', {
+        body: {
+          email: user.email,
+          amount,
+          plan: `premium_${plan.plan_id}`,
+          callback_url: `${window.location.origin}/dashboard`,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.data?.authorization_url) {
+        window.location.href = data.data.authorization_url;
+      } else {
+        throw new Error('No payment URL received');
+      }
+    } catch (err: any) {
+      toast({ title: 'Payment error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <div className="text-center">
@@ -29,19 +73,40 @@ const Upgrade = () => {
 
       {/* Plans */}
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-card rounded-xl border border-border p-6 shadow-card">
-          <h3 className="font-bold text-lg text-card-foreground">Monthly</h3>
-          <p className="text-3xl font-bold text-foreground mt-3">GH₵29<span className="text-sm font-normal text-muted-foreground">/month</span></p>
-          <p className="text-xs text-muted-foreground mt-1">Cancel anytime</p>
-          <Button variant="outline" className="w-full mt-6">Choose Monthly</Button>
-        </div>
-        <div className="bg-card rounded-xl border-2 border-primary p-6 shadow-elevated relative">
-          <span className="absolute -top-3 right-6 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">Save 33%</span>
-          <h3 className="font-bold text-lg text-card-foreground">Yearly</h3>
-          <p className="text-3xl font-bold text-foreground mt-3">GH₵19<span className="text-sm font-normal text-muted-foreground">/month</span></p>
-          <p className="text-xs text-muted-foreground mt-1">Billed GH₵228/year</p>
-          <Button className="w-full mt-6">Choose Yearly</Button>
-        </div>
+        {plans.map((plan) => (
+          <div
+            key={plan.plan_id}
+            className={`bg-card rounded-xl p-6 shadow-card relative ${
+              plan.highlight ? 'border-2 border-primary shadow-elevated' : 'border border-border'
+            }`}
+          >
+            {plan.save && (
+              <span className="absolute -top-3 right-6 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
+                {plan.save}
+              </span>
+            )}
+            <h3 className="font-bold text-lg text-card-foreground">{plan.name}</h3>
+            <p className="text-3xl font-bold text-foreground mt-3">
+              GH₵{plan.price}<span className="text-sm font-normal text-muted-foreground">{plan.label}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{plan.note}</p>
+            <Button
+              variant={plan.highlight ? 'default' : 'outline'}
+              className="w-full mt-6"
+              onClick={() => handleCheckout(plan)}
+              disabled={loading === plan.plan_id}
+            >
+              {loading === plan.plan_id ? 'Redirecting...' : `Choose ${plan.name}`}
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      {/* Accepted payment methods */}
+      <div className="text-center">
+        <p className="text-xs text-muted-foreground">
+          Pay securely with Card, Google Pay, MTN MoMo, or Telecel Cash via Paystack 🔒
+        </p>
       </div>
 
       {/* Feature Comparison */}
