@@ -5,6 +5,7 @@ import {
   BarChart3,
   Settings,
   Crown,
+  Heart,
   Menu,
   X,
   Wallet,
@@ -20,6 +21,7 @@ const navItems = [
   { title: 'Reports', url: '/reports', icon: BarChart3 },
   { title: 'Settings', url: '/settings', icon: Settings },
   { title: 'Upgrade', url: '/upgrade', icon: Crown },
+  { title: 'Support', url: '/support', icon: Heart },
 ];
 
 const AppSidebar = () => {
