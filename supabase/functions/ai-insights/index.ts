@@ -33,20 +33,47 @@ serve(async (req) => {
     }
 
     const { transactions, settings } = await req.json();
+
+    // Validate inputs
+    if (!Array.isArray(transactions)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid transactions format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    if (!settings || typeof settings !== "object" || !settings.currency || typeof settings.monthlyBudget !== "number") {
+      return new Response(
+        JSON.stringify({ error: "Invalid settings format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate and sanitize each transaction
+    const validTypes = ["income", "expense"];
+    const validatedTx = transactions.slice(0, 50).filter((t: any) =>
+      t && validTypes.includes(t.type) &&
+      typeof t.amount === "number" && t.amount >= 0 &&
+      typeof t.category === "string" && t.category.length <= 100 &&
+      typeof t.date === "string" && t.date.length <= 20
+    );
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const now = new Date();
     const currentMonth = now.toLocaleString('en', { month: 'long', year: 'numeric' });
 
+    const currency = String(settings.currency).slice(0, 10);
+    const budget = Number(settings.monthlyBudget);
+
     const systemPrompt = `You are a smart financial advisor for a Ghanaian budget app called SmartSpend. 
 Analyze the user's spending data and provide 3-5 personalized, actionable insights.
-Be specific with numbers and categories. Use the user's currency (${settings.currency}).
+Be specific with numbers and categories. Use the user's currency (${currency}).
 Keep each insight to 1-2 sentences. Be encouraging but honest.
 Format as a JSON array of objects with "icon" (emoji), "title" (short), and "message" (the insight).
-Current month: ${currentMonth}. Monthly budget: ${settings.monthlyBudget}.`;
+Current month: ${currentMonth}. Monthly budget: ${budget}.`;
 
-    const txSummary = transactions.slice(0, 50).map((t: any) => 
+    const txSummary = validatedTx.map((t: any) => 
       `${t.type}: ${t.category} - ${t.amount} on ${t.date}`
     ).join('\n');
 
