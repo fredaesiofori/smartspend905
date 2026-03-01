@@ -42,8 +42,8 @@ serve(async (req) => {
 
     // Define plan prices server-side to prevent amount manipulation
     const PLAN_PRICES: Record<string, number> = {
-      premium_monthly: 29,
-      premium_yearly: 228,
+      premium_monthly: 15,
+      premium_yearly: 50,
     };
 
     const { email, plan, callback_url } = await req.json();

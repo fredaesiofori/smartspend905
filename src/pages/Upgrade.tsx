@@ -19,8 +19,8 @@ const features = [
 ];
 
 const plans = [
-  { name: 'Monthly', price: 29, label: '/month', note: 'Cancel anytime', plan_id: 'monthly', highlight: false },
-  { name: 'Yearly', price: 19, label: '/month', note: 'Billed GH₵228/year', plan_id: 'yearly', highlight: true, save: 'Save 33%' },
+  { name: 'Monthly', price: 15, label: '/month', note: 'Cancel anytime', plan_id: 'monthly', highlight: false },
+  { name: 'Yearly', price: 4.17, label: '/month', note: 'Billed GH₵50/year', plan_id: 'yearly', highlight: true, save: 'Save 72%' },
 ];
 
 const Upgrade = () => {
