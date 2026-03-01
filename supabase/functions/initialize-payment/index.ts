@@ -56,7 +56,8 @@ serve(async (req) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(`Paystack API error [${response.status}]: ${JSON.stringify(data)}`);
+      console.error("Paystack API error:", response.status, JSON.stringify(data));
+      throw new Error("Payment provider error");
     }
 
     return new Response(JSON.stringify(data), {
@@ -65,9 +66,8 @@ serve(async (req) => {
     });
   } catch (error: unknown) {
     console.error("Payment initialization error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ status: false, message: errorMessage }),
+      JSON.stringify({ status: false, message: "Payment initialization failed. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
