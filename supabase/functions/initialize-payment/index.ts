@@ -25,9 +25,18 @@ serve(async (req) => {
 
     const { email, plan, callback_url } = await req.json();
 
-    if (!email || !plan) {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || typeof email !== "string" || !emailRegex.test(email)) {
       return new Response(
-        JSON.stringify({ error: "Email and plan are required" }),
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!plan || typeof plan !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Plan is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -39,6 +48,16 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Validate callback_url is from allowed origins
+    const ALLOWED_ORIGINS = [
+      "https://smart-cedi-spend.lovable.app",
+      "https://id-preview--cbde4349-1bb0-460b-8391-ab3fd20e8c6a.lovable.app",
+    ];
+    const safeCallbackUrl = callback_url && typeof callback_url === "string" &&
+      ALLOWED_ORIGINS.some((origin) => callback_url.startsWith(origin))
+      ? callback_url
+      : ALLOWED_ORIGINS[0] + "/dashboard";
 
     // Amount in pesewas (kobo equivalent for GHS)
     const amountInPesewas = Math.round(amount * 100);
@@ -53,14 +72,14 @@ serve(async (req) => {
         email,
         amount: amountInPesewas,
         currency: "GHS",
-        callback_url,
+        callback_url: safeCallbackUrl,
         metadata: {
-          plan: plan || "donation",
+          plan,
           custom_fields: [
             {
               display_name: "Plan",
               variable_name: "plan",
-              value: plan || "donation",
+              value: plan,
             },
           ],
         },
