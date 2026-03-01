@@ -45,10 +45,11 @@ const Upgrade = () => {
       });
 
       if (error) throw error;
-      if (data?.data?.authorization_url) {
-        window.location.href = data.data.authorization_url;
+      const paymentUrl = data?.data?.authorization_url;
+      if (typeof paymentUrl === 'string' && paymentUrl.startsWith('https://checkout.paystack.com/')) {
+        window.location.href = paymentUrl;
       } else {
-        throw new Error('No payment URL received');
+        throw new Error('Invalid payment URL received');
       }
     } catch (err: any) {
       toast({ title: 'Payment error', description: err.message, variant: 'destructive' });
