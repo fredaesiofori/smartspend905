@@ -17,11 +17,25 @@ serve(async (req) => {
       throw new Error("PAYSTACK_SECRET_KEY is not configured");
     }
 
-    const { email, amount, plan, callback_url } = await req.json();
+    // Define plan prices server-side to prevent amount manipulation
+    const PLAN_PRICES: Record<string, number> = {
+      premium_monthly: 29,
+      premium_yearly: 228,
+    };
 
-    if (!email || !amount) {
+    const { email, plan, callback_url } = await req.json();
+
+    if (!email || !plan) {
       return new Response(
-        JSON.stringify({ error: "Email and amount are required" }),
+        JSON.stringify({ error: "Email and plan are required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const amount = PLAN_PRICES[plan];
+    if (!amount) {
+      return new Response(
+        JSON.stringify({ error: "Invalid plan selected" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
