@@ -36,11 +36,9 @@ const Upgrade = () => {
 
     setLoading(plan.plan_id);
     try {
-      const amount = plan.plan_id === 'yearly' ? 228 : 29;
       const { data, error } = await supabase.functions.invoke('initialize-payment', {
         body: {
           email: user.email,
-          amount,
           plan: `premium_${plan.plan_id}`,
           callback_url: `${window.location.origin}/dashboard`,
         },
