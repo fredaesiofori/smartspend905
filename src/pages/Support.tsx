@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 const momoAccounts = [
   {
     provider: 'MTN MoMo',
-    number: '059 1616 8684',
+    number: '059 6168 684',
     name: 'Smart Cedi Spend',
     color: 'bg-[hsl(48,96%,53%)]',
     textColor: 'text-foreground',
