@@ -342,14 +342,47 @@ const Index = () => {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section id="faq" className="py-20 bg-secondary/30">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-10">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {[
+              { q: 'Is SmartSpend free to use?', a: 'Yes. SmartSpend offers a free plan for basic expense tracking. Premium features require a subscription.' },
+              { q: 'Is my financial data secure?', a: 'Yes. Your data is securely stored and only accessible to you. SmartSpend does not sell or share personal financial data.' },
+              { q: 'Can I cancel my subscription anytime?', a: 'Yes. You can upgrade, downgrade, or cancel anytime from your account settings.' },
+              { q: 'Who is SmartSpend for?', a: 'SmartSpend is designed for students, young professionals, and anyone who wants better control of their spending.' },
+              { q: 'Does SmartSpend show ads?', a: 'Ads may appear on public pages. The dashboard remains clean and focused.' },
+              { q: 'Why is tracking expenses important?', a: 'Tracking helps you understand spending habits, avoid overspending, and reach savings goals faster.' },
+            ].map((faq, i) => (
+              <motion.details
+                key={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={i}
+                className="bg-card rounded-xl border border-border shadow-card group"
+              >
+                <summary className="cursor-pointer p-5 font-semibold text-card-foreground flex items-center justify-between list-none">
+                  {faq.q}
+                  <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+              </motion.details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 bg-gradient-hero">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground">Ready to Take Control of Your Money?</h2>
-          <p className="text-primary-foreground/80 mt-4 text-lg">Join thousands of Ghanaians building better financial habits with SmartSpend. It's free, it's simple, and it works.</p>
+          <p className="text-primary-foreground/80 mt-4 text-lg">Start tracking your expenses today and build smarter financial habits.</p>
           <Link to="/auth">
             <Button size="lg" variant="secondary" className="mt-8 text-base px-8 gap-2">
-              Sign Up Now — It's Free <ArrowRight className="h-4 w-4" />
+              Create Free Account <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
