@@ -30,10 +30,13 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: authError } = await supabaseClient.auth.getClaims(token);
     if (authError || !claimsData?.claims) {
+      console.warn("Payment auth failure:", authError?.message ?? "invalid claims");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const userId = claimsData.claims.sub;
 
     const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY");
     if (!PAYSTACK_SECRET_KEY) {
@@ -115,6 +118,8 @@ serve(async (req) => {
       console.error("Paystack API error:", response.status, JSON.stringify(data));
       throw new Error("Payment provider error");
     }
+
+    console.info(`Payment initialized: user=${userId}, plan=${plan}, amount=${amount}`);
 
     return new Response(JSON.stringify(data), {
       status: 200,

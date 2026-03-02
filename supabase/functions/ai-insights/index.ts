@@ -27,10 +27,14 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: authError } = await supabaseClient.auth.getClaims(token);
     if (authError || !claimsData?.claims) {
+      console.warn("AI insights auth failure:", authError?.message ?? "invalid claims");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const userId = claimsData.claims.sub;
+    console.info(`AI insights requested by user=${userId}`);
 
     const { transactions, settings } = await req.json();
 
