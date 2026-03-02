@@ -14,6 +14,9 @@ import Reports from "./pages/Reports";
 import SettingsPage from "./pages/Settings";
 import Upgrade from "./pages/Upgrade";
 import Support from "./pages/Support";
+import Privacy from "./pages/Privacy";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +34,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/transactions" element={<Transactions />} />
