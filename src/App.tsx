@@ -17,6 +17,7 @@ import Support from "./pages/Support";
 import Privacy from "./pages/Privacy";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Referral from "./pages/Referral";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/transactions" element={<Transactions />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/referral" element={<Referral />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/support" element={<Support />} />
               </Route>
