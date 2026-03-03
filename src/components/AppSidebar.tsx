@@ -10,6 +10,7 @@ import {
   X,
   Wallet,
   LogOut,
+  Gift,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +20,7 @@ const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Transactions', url: '/transactions', icon: ArrowLeftRight },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
+  { title: 'Refer & Earn', url: '/referral', icon: Gift },
   { title: 'Settings', url: '/settings', icon: Settings },
   { title: 'Upgrade', url: '/upgrade', icon: Crown },
   { title: 'Support', url: '/support', icon: Heart },

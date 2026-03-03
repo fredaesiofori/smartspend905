@@ -14,12 +14,43 @@ export type Database = {
   }
   public: {
     Tables: {
+      impulse_alerts: {
+        Row: {
+          action: string
+          category: string
+          category_avg: number
+          created_at: string
+          id: string
+          transaction_amount: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          category: string
+          category_avg: number
+          created_at?: string
+          id?: string
+          transaction_amount: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          category?: string
+          category_avg?: number
+          created_at?: string
+          id?: string
+          transaction_amount?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           currency: string | null
           dark_mode: boolean | null
           id: string
+          impulse_mode: boolean | null
           monthly_budget: number | null
           name: string | null
           updated_at: string
@@ -29,6 +60,7 @@ export type Database = {
           currency?: string | null
           dark_mode?: boolean | null
           id: string
+          impulse_mode?: boolean | null
           monthly_budget?: number | null
           name?: string | null
           updated_at?: string
@@ -38,9 +70,58 @@ export type Database = {
           currency?: string | null
           dark_mode?: boolean | null
           id?: string
+          impulse_mode?: boolean | null
           monthly_budget?: number | null
           name?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          reward_type: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          reward_type?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_type?: string | null
+          status?: string
         }
         Relationships: []
       }

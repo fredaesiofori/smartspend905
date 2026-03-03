@@ -46,6 +46,7 @@ export interface UserSettings {
   monthlyBudget: number;
   darkMode: boolean;
   name: string;
+  impulseMode: boolean;
 }
 
 export interface AppState {

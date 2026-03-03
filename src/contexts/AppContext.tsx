@@ -25,6 +25,7 @@ const defaultSettings: UserSettings = {
   monthlyBudget: 5000,
   darkMode: false,
   name: 'User',
+  impulseMode: true,
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -101,6 +102,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             monthlyBudget: Number(profile.monthly_budget) || 5000,
             darkMode: profile.dark_mode || false,
             name: profile.name || 'User',
+            impulseMode: (profile as any).impulse_mode !== false,
           });
         }
       } catch (err) {
@@ -177,7 +179,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         monthly_budget: newSettings.monthlyBudget,
         dark_mode: newSettings.darkMode,
         name: newSettings.name,
-      }).eq('id', user.id);
+        impulse_mode: newSettings.impulseMode,
+      } as any).eq('id', user.id);
       if (error) toast({ title: 'Error', description: error.message, variant: 'destructive' });
     }
   }, [user, isGuest, settings, toast]);

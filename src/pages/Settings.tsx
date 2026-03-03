@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Smartphone } from 'lucide-react';
+import { Smartphone, ShieldAlert } from 'lucide-react';
 
 const currencies: { value: Currency; label: string }[] = [
   { value: 'GHS', label: '🇬🇭 GHS — Ghana Cedi' },
@@ -70,6 +70,20 @@ const SettingsPage = () => {
             <p className="text-xs text-muted-foreground">Switch between light and dark theme</p>
           </div>
           <Switch checked={settings.darkMode} onCheckedChange={v => updateSettings({ darkMode: v })} />
+        </div>
+      </div>
+
+      {/* Impulse Alert Mode */}
+      <div className="bg-card rounded-lg border border-border p-5 shadow-card space-y-4">
+        <h3 className="font-semibold text-card-foreground flex items-center gap-2">
+          <ShieldAlert className="h-4 w-4 text-warning" /> Impulse Alert Mode
+        </h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-card-foreground">Enable Spending Guards</p>
+            <p className="text-xs text-muted-foreground">Get warned when a purchase exceeds 2x your category average</p>
+          </div>
+          <Switch checked={settings.impulseMode} onCheckedChange={v => updateSettings({ impulseMode: v })} />
         </div>
       </div>
 
