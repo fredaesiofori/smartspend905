@@ -2,10 +2,12 @@ import { TrendingUp, TrendingDown, Wallet, Target, AlertTriangle } from 'lucide-
 import { useApp } from '@/contexts/AppContext';
 import StatCard from '@/components/StatCard';
 import TransactionForm from '@/components/TransactionForm';
+import ReceiptScanner from '@/components/ReceiptScanner';
 import FinancialTips from '@/components/FinancialTips';
 import SponsoredCard from '@/components/SponsoredCard';
 import AdPlaceholder from '@/components/AdPlaceholder';
 import AIInsights from '@/components/AIInsights';
+import DailyWisdom from '@/components/DailyWisdom';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 
@@ -21,7 +23,10 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-sm text-muted-foreground">Welcome back! Here's your financial overview.</p>
         </div>
-        <TransactionForm />
+        <div className="flex gap-2">
+          <ReceiptScanner />
+          <TransactionForm />
+        </div>
       </div>
 
       {/* Budget Alert at 80% */}
@@ -96,6 +101,7 @@ const Dashboard = () => {
 
         {/* Sidebar */}
         <div className="space-y-4">
+          <DailyWisdom />
           <FinancialTips />
           <SponsoredCard
             title="MTN MoMo Savings"
