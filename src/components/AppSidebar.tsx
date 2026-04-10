@@ -11,6 +11,7 @@ import {
   Wallet,
   LogOut,
   Gift,
+  MessageCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +21,7 @@ const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Transactions', url: '/transactions', icon: ArrowLeftRight },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
+  { title: 'AI Assistant', url: '/ai-chat', icon: MessageCircle },
   { title: 'Refer & Earn', url: '/referral', icon: Gift },
   { title: 'Settings', url: '/settings', icon: Settings },
   { title: 'Upgrade', url: '/upgrade', icon: Crown },
