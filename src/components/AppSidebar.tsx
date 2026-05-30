@@ -12,6 +12,8 @@ import {
   LogOut,
   Gift,
   MessageCircle,
+  Target,
+  CalendarRange,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,6 +23,8 @@ const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Transactions', url: '/transactions', icon: ArrowLeftRight },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
+  { title: 'Weekly Report', url: '/weekly-report', icon: CalendarRange },
+  { title: 'Savings Goals', url: '/goals', icon: Target },
   { title: 'AI Assistant', url: '/ai-chat', icon: MessageCircle },
   { title: 'Refer & Earn', url: '/referral', icon: Gift },
   { title: 'Settings', url: '/settings', icon: Settings },

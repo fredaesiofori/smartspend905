@@ -125,6 +125,45 @@ export type Database = {
         }
         Relationships: []
       }
+      savings_goals: {
+        Row: {
+          category: string | null
+          created_at: string
+          current_amount: number
+          deadline: string | null
+          icon: string | null
+          id: string
+          name: string
+          target_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          target_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          current_amount?: number
+          deadline?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          target_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

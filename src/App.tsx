@@ -19,6 +19,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Referral from "./pages/Referral";
 import AIChat from "./pages/AIChat";
+import SavingsGoals from "./pages/SavingsGoals";
+import WeeklyReport from "./pages/WeeklyReport";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +47,8 @@ const App = () => (
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/ai-chat" element={<AIChat />} />
+                <Route path="/goals" element={<SavingsGoals />} />
+                <Route path="/weekly-report" element={<WeeklyReport />} />
                 <Route path="/referral" element={<Referral />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/support" element={<Support />} />
