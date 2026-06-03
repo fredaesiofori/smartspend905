@@ -9,6 +9,52 @@ const COLORS = ['hsl(152, 56%, 39%)', 'hsl(38, 92%, 50%)', 'hsl(0, 72%, 51%)', '
 
 const Reports = () => {
   const { transactions, currencySymbol, budgetProgress, settings } = useApp();
+  const currentYear = new Date().getFullYear();
+  const availableYears = useMemo(() => {
+    const years = new Set<number>(transactions.map(t => new Date(t.date).getFullYear()));
+    years.add(currentYear);
+    return Array.from(years).sort((a, b) => b - a);
+  }, [transactions, currentYear]);
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+
+  const yearTxns = useMemo(
+    () => transactions.filter(t => new Date(t.date).getFullYear() === selectedYear),
+    [transactions, selectedYear]
+  );
+
+  const yearSummary = useMemo(() => {
+    const income = yearTxns.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+    const expenses = yearTxns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+    const monthsWithData = new Set(yearTxns.map(t => new Date(t.date).getMonth())).size || 1;
+    return {
+      income, expenses,
+      savings: income - expenses,
+      savingsRate: income > 0 ? ((income - expenses) / income) * 100 : 0,
+      avgMonthlyExpense: expenses / monthsWithData,
+    };
+  }, [yearTxns]);
+
+  const topCategories = useMemo(() => {
+    const map: Record<string, number> = {};
+    yearTxns.filter(t => t.type === 'expense').forEach(t => { map[t.category] = (map[t.category] || 0) + t.amount; });
+    const total = Object.values(map).reduce((s, v) => s + v, 0) || 1;
+    return Object.entries(map)
+      .map(([name, value]) => ({ name, value, pct: (value / total) * 100 }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [yearTxns]);
+
+  const insights = useMemo(() => {
+    const out: string[] = [];
+    if (yearSummary.savingsRate >= 20) out.push(`Excellent! You saved ${yearSummary.savingsRate.toFixed(0)}% of your income in ${selectedYear}.`);
+    else if (yearSummary.savingsRate > 0) out.push(`You saved ${yearSummary.savingsRate.toFixed(0)}% this year — aim for 20% next.`);
+    else if (yearSummary.income > 0) out.push(`You overspent your income by ${currencySymbol}${Math.abs(yearSummary.savings).toLocaleString()}. Tighten your top category.`);
+    if (topCategories[0]) out.push(`Top category: ${topCategories[0].name} (${topCategories[0].pct.toFixed(0)}% of expenses).`);
+    if (topCategories[0]?.pct > 40) out.push(`${topCategories[0].name} takes up over 40% of spending — consider trimming it.`);
+    return out;
+  }, [yearSummary, topCategories, selectedYear, currencySymbol]);
+
+
 
   const categoryData = useMemo(() => {
     const map: Record<string, number> = {};
