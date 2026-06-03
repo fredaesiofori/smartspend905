@@ -114,7 +114,6 @@ const Dashboard = () => {
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <DailyWisdom />
           <FinancialTips />
           <SponsoredCard
             title="MTN MoMo Savings"
