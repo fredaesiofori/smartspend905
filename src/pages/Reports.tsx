@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import SponsoredCard from '@/components/SponsoredCard';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Calendar, TrendingDown, TrendingUp, Lightbulb } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const COLORS = ['hsl(152, 56%, 39%)', 'hsl(38, 92%, 50%)', 'hsl(0, 72%, 51%)', 'hsl(200, 60%, 50%)', 'hsl(270, 50%, 55%)', 'hsl(30, 80%, 50%)', 'hsl(180, 50%, 40%)', 'hsl(340, 60%, 50%)'];
 
