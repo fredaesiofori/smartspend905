@@ -15,6 +15,7 @@ import ImpulseAlert from './ImpulseAlert';
 const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
   const { addTransaction, transactions, settings, currencySymbol } = useApp();
   const { user, isGuest } = useAuth();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -23,6 +24,29 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
   const [notes, setNotes] = useState('');
   const [impulseOpen, setImpulseOpen] = useState(false);
   const [impulseData, setImpulseData] = useState({ avg: 0 });
+  const [suggesting, setSuggesting] = useState(false);
+
+  const handleSuggestCategory = async () => {
+    if (!notes.trim()) {
+      toast({ title: 'Add a note first', description: 'Describe what this expense is for so AI can categorize it.' });
+      return;
+    }
+    setSuggesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('categorize-expense', {
+        body: { description: notes, categories: CATEGORIES[type] },
+      });
+      if (error) throw error;
+      if (data?.category) {
+        setCategory(data.category);
+        toast({ title: '✨ Suggested', description: `Categorized as "${data.category}"` });
+      }
+    } catch (err: any) {
+      toast({ title: 'Could not suggest', description: err?.message || 'Try again later.', variant: 'destructive' });
+    } finally {
+      setSuggesting(false);
+    }
+  };
 
   const getCategoryAverage = (cat: string) => {
     const catTxns = transactions.filter(t => t.category === cat && t.type === 'expense');
