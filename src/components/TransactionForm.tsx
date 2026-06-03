@@ -136,7 +136,18 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
             </div>
 
             <div>
-              <Label>Category</Label>
+              <div className="flex items-center justify-between">
+                <Label>Category</Label>
+                <button
+                  type="button"
+                  onClick={handleSuggestCategory}
+                  disabled={suggesting}
+                  className="text-xs flex items-center gap-1 text-primary hover:underline disabled:opacity-50"
+                >
+                  {suggesting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                  AI suggest
+                </button>
+              </div>
               <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                 <SelectContent>
@@ -154,7 +165,7 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
 
             <div>
               <Label>Notes (optional)</Label>
-              <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Add a note..." />
+              <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. lunch at KFC, uber to school..." />
             </div>
 
             <Button type="submit" className="w-full">
