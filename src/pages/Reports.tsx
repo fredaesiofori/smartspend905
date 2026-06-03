@@ -86,10 +86,92 @@ const Reports = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Reports & Analytics</h1>
-        <p className="text-sm text-muted-foreground">Visual insights into your spending habits.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Reports & Analytics</h1>
+          <p className="text-sm text-muted-foreground">Visual insights into your spending habits.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
+            <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {availableYears.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* Yearly Summary */}
+      <div className="bg-gradient-primary rounded-xl p-5 text-primary-foreground shadow-elevated">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-xs opacity-80 uppercase tracking-wide">{selectedYear} Summary</p>
+            <p className="text-2xl font-bold">{currencySymbol}{yearSummary.savings.toLocaleString('en', { minimumFractionDigits: 2 })}</p>
+            <p className="text-xs opacity-80">Net savings · {yearSummary.savingsRate.toFixed(0)}% savings rate</p>
+          </div>
+          {yearSummary.savings >= 0
+            ? <TrendingUp className="h-10 w-10 opacity-70" />
+            : <TrendingDown className="h-10 w-10 opacity-70" />}
+        </div>
+        <div className="grid grid-cols-3 gap-3 text-xs">
+          <div className="bg-white/10 rounded-lg p-2.5">
+            <p className="opacity-80">Income</p>
+            <p className="font-bold text-sm">{currencySymbol}{yearSummary.income.toLocaleString()}</p>
+          </div>
+          <div className="bg-white/10 rounded-lg p-2.5">
+            <p className="opacity-80">Expenses</p>
+            <p className="font-bold text-sm">{currencySymbol}{yearSummary.expenses.toLocaleString()}</p>
+          </div>
+          <div className="bg-white/10 rounded-lg p-2.5">
+            <p className="opacity-80">Avg/month</p>
+            <p className="font-bold text-sm">{currencySymbol}{yearSummary.avgMonthlyExpense.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Categories + Insights */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="bg-card rounded-lg border border-border p-5 shadow-card">
+          <h3 className="font-semibold text-card-foreground mb-4">Top Spending Categories ({selectedYear})</h3>
+          {topCategories.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">No expenses recorded for {selectedYear}.</p>
+          ) : (
+            <div className="space-y-3">
+              {topCategories.map((c, i) => (
+                <div key={c.name}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-card-foreground font-medium">{i + 1}. {c.name}</span>
+                    <span className="text-muted-foreground">{currencySymbol}{c.value.toLocaleString('en', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ width: `${c.pct}%`, background: COLORS[i % COLORS.length] }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="bg-card rounded-lg border border-border p-5 shadow-card">
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb className="h-4 w-4 text-gold" />
+            <h3 className="font-semibold text-card-foreground">Smart Insights</h3>
+          </div>
+          {insights.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Add more transactions to unlock insights.</p>
+          ) : (
+            <ul className="space-y-2">
+              {insights.map((ins, i) => (
+                <li key={i} className="text-sm flex gap-2 text-card-foreground">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span>{ins}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
 
       {budgetProgress > 90 && (
         <div className="flex items-center gap-3 p-4 rounded-lg bg-expense/10 border border-expense/20">
