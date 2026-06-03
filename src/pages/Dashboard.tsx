@@ -8,6 +8,8 @@ import SponsoredCard from '@/components/SponsoredCard';
 import AdPlaceholder from '@/components/AdPlaceholder';
 import AIInsights from '@/components/AIInsights';
 import DailyWisdom from '@/components/DailyWisdom';
+import FinancialHealthScore from '@/components/FinancialHealthScore';
+import SpendingTrendChart from '@/components/SpendingTrendChart';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 
