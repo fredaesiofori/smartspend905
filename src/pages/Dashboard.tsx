@@ -8,6 +8,8 @@ import SponsoredCard from '@/components/SponsoredCard';
 import AdPlaceholder from '@/components/AdPlaceholder';
 import AIInsights from '@/components/AIInsights';
 import DailyWisdom from '@/components/DailyWisdom';
+import FinancialHealthScore from '@/components/FinancialHealthScore';
+import SpendingTrendChart from '@/components/SpendingTrendChart';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 
@@ -71,7 +73,18 @@ const Dashboard = () => {
       {/* AI Insights */}
       <AIInsights />
 
+      {/* Health Score + Trend Chart */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <FinancialHealthScore />
+        <div className="space-y-4">
+          <DailyWisdom />
+        </div>
+      </div>
+
+      <SpendingTrendChart />
+
       <div className="grid lg:grid-cols-3 gap-6">
+
         {/* Recent Transactions */}
         <div className="lg:col-span-2 bg-card rounded-lg border border-border p-5 shadow-card">
           <div className="flex items-center justify-between mb-4">
@@ -101,7 +114,6 @@ const Dashboard = () => {
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <DailyWisdom />
           <FinancialTips />
           <SponsoredCard
             title="MTN MoMo Savings"
