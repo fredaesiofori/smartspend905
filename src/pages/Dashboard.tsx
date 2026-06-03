@@ -73,7 +73,18 @@ const Dashboard = () => {
       {/* AI Insights */}
       <AIInsights />
 
+      {/* Health Score + Trend Chart */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <FinancialHealthScore />
+        <div className="space-y-4">
+          <DailyWisdom />
+        </div>
+      </div>
+
+      <SpendingTrendChart />
+
       <div className="grid lg:grid-cols-3 gap-6">
+
         {/* Recent Transactions */}
         <div className="lg:col-span-2 bg-card rounded-lg border border-border p-5 shadow-card">
           <div className="flex items-center justify-between mb-4">
