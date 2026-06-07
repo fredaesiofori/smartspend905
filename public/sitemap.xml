@@ -5,4 +5,6 @@
   <url><loc>https://smartspend905.lovable.app/about</loc><priority>0.6</priority></url>
   <url><loc>https://smartspend905.lovable.app/contact</loc><priority>0.6</priority></url>
   <url><loc>https://smartspend905.lovable.app/privacy</loc><priority>0.5</priority></url>
+  <url><loc>https://smartspend905.lovable.app/support</loc><priority>0.5</priority></url>
+  <url><loc>https://smartspend905.lovable.app/upgrade</loc><priority>0.7</priority></url>
 </urlset>
