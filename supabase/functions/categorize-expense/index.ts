@@ -1,20 +1,47 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const MAX_DESC_CHARS = 500;
+const MAX_CATEGORIES = 50;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { description, categories } = await req.json();
-    if (!description || !Array.isArray(categories) || categories.length === 0) {
+    // Authenticate caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let { description, categories } = await req.json();
+    if (typeof description !== "string" || !description.trim() || !Array.isArray(categories) || categories.length === 0) {
       return new Response(JSON.stringify({ error: "description and categories are required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    description = description.slice(0, MAX_DESC_CHARS);
+    categories = categories.slice(0, MAX_CATEGORIES)
+      .filter((c: any) => typeof c === "string" && c.length > 0)
+      .map((c: string) => c.slice(0, 100));
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -52,7 +79,6 @@ Category:`;
     const data = await r.json();
     const raw: string = data?.choices?.[0]?.message?.content?.trim() || "";
     const cleaned = raw.replace(/[*_`."']/g, "").trim();
-    // Find exact or case-insensitive match in allowed list
     const match = categories.find((c: string) => c.toLowerCase() === cleaned.toLowerCase())
       || categories.find((c: string) => cleaned.toLowerCase().includes(c.toLowerCase()))
       || "Other";
