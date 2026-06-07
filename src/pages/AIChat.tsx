@@ -62,16 +62,23 @@ const AIChat = () => {
     setIsLoading(true);
 
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Please sign in to use the AI assistant.' }]);
+        setIsLoading(false);
+        return;
+      }
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          messages: newMessages,
-          financialContext: getFinancialContext(),
+          messages: newMessages.slice(-20),
+          financialContext: getFinancialContext().slice(0, 3000),
         }),
       });
 

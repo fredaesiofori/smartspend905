@@ -50,11 +50,18 @@ const ReceiptScanner = () => {
   const extractReceipt = async (imageBase64: string) => {
     setLoading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        toast({ title: 'Sign in required', description: 'Please sign in to scan receipts.', variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
       const resp = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-receipt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ image: imageBase64 }),
       });
