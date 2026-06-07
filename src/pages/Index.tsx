@@ -44,7 +44,7 @@ const blogPosts = [
     icon: BookOpen,
     title: '5 Budgeting Tips Every Student Should Know',
     excerpt: 'University life is expensive. Learn how to stretch your allowance further with these five simple budgeting strategies that actually work for students in Ghana.',
-    slug: '#',
+    slug: '/blog/best-budgeting-apps-ghana',
   },
   {
     icon: PiggyBank,
