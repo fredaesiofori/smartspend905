@@ -44,7 +44,7 @@ const blogPosts = [
     icon: BookOpen,
     title: '5 Budgeting Tips Every Student Should Know',
     excerpt: 'University life is expensive. Learn how to stretch your allowance further with these five simple budgeting strategies that actually work for students in Ghana.',
-    slug: '#',
+    slug: '/blog/best-budgeting-apps-ghana',
   },
   {
     icon: PiggyBank,
@@ -319,24 +319,28 @@ const Index = () => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {blogPosts.map((post, i) => (
-              <motion.article
+              <motion.div
                 key={post.title}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
                 custom={i}
-                className="bg-card rounded-xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border flex flex-col"
               >
-                <div className="p-3 rounded-lg bg-primary/10 w-fit mb-4">
-                  <post.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-semibold text-card-foreground text-sm leading-snug">{post.title}</h3>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed flex-1">{post.excerpt}</p>
-                <span className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">
-                  Read more <ArrowRight className="h-3 w-3" />
-                </span>
-              </motion.article>
+                <Link
+                  to={post.slug}
+                  className="block bg-card rounded-xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border flex flex-col h-full"
+                >
+                  <div className="p-3 rounded-lg bg-primary/10 w-fit mb-4">
+                    <post.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-card-foreground text-sm leading-snug">{post.title}</h3>
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed flex-1">{post.excerpt}</p>
+                  <span className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">
+                    Read more <ArrowRight className="h-3 w-3" />
+                  </span>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>

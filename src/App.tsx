@@ -21,6 +21,7 @@ import Referral from "./pages/Referral";
 import AIChat from "./pages/AIChat";
 import SavingsGoals from "./pages/SavingsGoals";
 import WeeklyReport from "./pages/WeeklyReport";
+import BlogBestApps from "./pages/BlogBestApps";
 import AppLayout from "./components/AppLayout";
 import NotFound from "./pages/NotFound";
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/blog/best-budgeting-apps-ghana" element={<BlogBestApps />} />
               <Route element={<AppLayout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/transactions" element={<Transactions />} />
