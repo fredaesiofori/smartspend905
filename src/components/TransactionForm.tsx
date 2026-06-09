@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import ImpulseAlert from './ImpulseAlert';
 
 const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
-  const { addTransaction, transactions, settings, currencySymbol } = useApp();
+  const { addTransaction, transactions, settings, currencySymbol, categories } = useApp();
   const { user, isGuest } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
