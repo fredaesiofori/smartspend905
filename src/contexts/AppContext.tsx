@@ -241,7 +241,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const currencySymbol = CURRENCY_SYMBOLS[settings.currency];
 
   return (
-    <AppContext.Provider value={{ transactions, settings, addTransaction, updateTransaction, deleteTransaction, updateSettings, currencySymbol, totalIncome, totalExpenses, balance, monthlyExpenses, budgetProgress, loadingData }}>
+    <AppContext.Provider value={{ transactions, settings, categories, addCategory, renameCategory, deleteCategory, addTransaction, updateTransaction, deleteTransaction, updateSettings, currencySymbol, totalIncome, totalExpenses, balance, monthlyExpenses, budgetProgress, loadingData }}>
       {children}
     </AppContext.Provider>
   );
