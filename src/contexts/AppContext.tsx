@@ -1,12 +1,21 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Transaction, UserSettings, Currency, CURRENCY_SYMBOLS } from '@/types';
+import { Transaction, UserSettings, Currency, CURRENCY_SYMBOLS, CATEGORIES, TransactionType } from '@/types';
 import { useAuth } from './AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+interface CategoryMap {
+  income: string[];
+  expense: string[];
+}
+
 interface AppContextType {
   transactions: Transaction[];
   settings: UserSettings;
+  categories: CategoryMap;
+  addCategory: (type: TransactionType, name: string) => void;
+  renameCategory: (type: TransactionType, oldName: string, newName: string) => void;
+  deleteCategory: (type: TransactionType, name: string) => void;
   addTransaction: (t: Omit<Transaction, 'id' | 'createdAt'>) => void;
   updateTransaction: (id: string, t: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;
