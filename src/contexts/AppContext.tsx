@@ -94,6 +94,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCategories(prev => ({ ...prev, [type]: prev[type].filter(c => c !== name) }));
   }, []);
 
+  // Load data from Supabase when user is authenticated
+  useEffect(() => {
     if (isGuest) {
       setTransactions(loadFromStorage('smartspend_transactions', []));
       setSettings(loadFromStorage('smartspend_settings', defaultSettings));
