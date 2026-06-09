@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Smartphone, ShieldAlert } from 'lucide-react';
+import CategoryManager from '@/components/CategoryManager';
 
 const currencies: { value: Currency; label: string }[] = [
   { value: 'GHS', label: '🇬🇭 GHS — Ghana Cedi' },
