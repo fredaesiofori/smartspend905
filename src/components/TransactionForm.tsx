@@ -151,7 +151,7 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
               <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES[type].map((c) => (
+                  {categories[type].map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>
