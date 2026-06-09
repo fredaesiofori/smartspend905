@@ -84,6 +84,9 @@ const Dashboard = () => {
 
       <SpendingTrendChart />
 
+      <CategoryBreakdown />
+
+
       <div className="grid lg:grid-cols-3 gap-6">
 
         {/* Recent Transactions */}
