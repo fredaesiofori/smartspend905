@@ -10,6 +10,7 @@ import AIInsights from '@/components/AIInsights';
 import DailyWisdom from '@/components/DailyWisdom';
 import FinancialHealthScore from '@/components/FinancialHealthScore';
 import SpendingTrendChart from '@/components/SpendingTrendChart';
+import CategoryBreakdown from '@/components/CategoryBreakdown';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 
@@ -82,6 +83,9 @@ const Dashboard = () => {
       </div>
 
       <SpendingTrendChart />
+
+      <CategoryBreakdown />
+
 
       <div className="grid lg:grid-cols-3 gap-6">
 

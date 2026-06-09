@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Smartphone, ShieldAlert } from 'lucide-react';
+import CategoryManager from '@/components/CategoryManager';
 
 const currencies: { value: Currency; label: string }[] = [
   { value: 'GHS', label: '🇬🇭 GHS — Ghana Cedi' },
@@ -72,6 +73,9 @@ const SettingsPage = () => {
           <Switch checked={settings.darkMode} onCheckedChange={v => updateSettings({ darkMode: v })} />
         </div>
       </div>
+
+      {/* Categories */}
+      <CategoryManager />
 
       {/* Impulse Alert Mode */}
       <div className="bg-card rounded-lg border border-border p-5 shadow-card space-y-4">

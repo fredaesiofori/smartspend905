@@ -1,12 +1,21 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Transaction, UserSettings, Currency, CURRENCY_SYMBOLS } from '@/types';
+import { Transaction, UserSettings, Currency, CURRENCY_SYMBOLS, CATEGORIES, TransactionType } from '@/types';
 import { useAuth } from './AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+interface CategoryMap {
+  income: string[];
+  expense: string[];
+}
+
 interface AppContextType {
   transactions: Transaction[];
   settings: UserSettings;
+  categories: CategoryMap;
+  addCategory: (type: TransactionType, name: string) => void;
+  renameCategory: (type: TransactionType, oldName: string, newName: string) => void;
+  deleteCategory: (type: TransactionType, name: string) => void;
   addTransaction: (t: Omit<Transaction, 'id' | 'createdAt'>) => void;
   updateTransaction: (id: string, t: Partial<Transaction>) => void;
   deleteTransaction: (id: string) => void;
@@ -50,7 +59,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const { toast } = useToast();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+  const [categories, setCategories] = useState<CategoryMap>({ income: CATEGORIES.income, expense: CATEGORIES.expense });
   const [loadingData, setLoadingData] = useState(true);
+
+  // Load categories from localStorage scoped by user/guest
+  const catStorageKey = `smartspend_categories_${user?.id || 'guest'}`;
+  useEffect(() => {
+    const stored = loadFromStorage<CategoryMap | null>(catStorageKey, null);
+    if (stored && stored.income && stored.expense) {
+      setCategories(stored);
+    } else {
+      setCategories({ income: [...CATEGORIES.income], expense: [...CATEGORIES.expense] });
+    }
+  }, [catStorageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(catStorageKey, JSON.stringify(categories));
+  }, [categories, catStorageKey]);
+
+  const addCategory = useCallback((type: TransactionType, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setCategories(prev => prev[type].includes(trimmed) ? prev : { ...prev, [type]: [...prev[type], trimmed] });
+  }, []);
+
+  const renameCategory = useCallback((type: TransactionType, oldName: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === oldName) return;
+    setCategories(prev => ({ ...prev, [type]: prev[type].map(c => c === oldName ? trimmed : c) }));
+    setTransactions(prev => prev.map(t => (t.type === type && t.category === oldName ? { ...t, category: trimmed } : t)));
+  }, []);
+
+  const deleteCategory = useCallback((type: TransactionType, name: string) => {
+    setCategories(prev => ({ ...prev, [type]: prev[type].filter(c => c !== name) }));
+  }, []);
 
   // Load data from Supabase when user is authenticated
   useEffect(() => {
@@ -199,7 +241,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const currencySymbol = CURRENCY_SYMBOLS[settings.currency];
 
   return (
-    <AppContext.Provider value={{ transactions, settings, addTransaction, updateTransaction, deleteTransaction, updateSettings, currencySymbol, totalIncome, totalExpenses, balance, monthlyExpenses, budgetProgress, loadingData }}>
+    <AppContext.Provider value={{ transactions, settings, categories, addCategory, renameCategory, deleteCategory, addTransaction, updateTransaction, deleteTransaction, updateSettings, currencySymbol, totalIncome, totalExpenses, balance, monthlyExpenses, budgetProgress, loadingData }}>
       {children}
     </AppContext.Provider>
   );

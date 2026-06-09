@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import ImpulseAlert from './ImpulseAlert';
 
 const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
-  const { addTransaction, transactions, settings, currencySymbol } = useApp();
+  const { addTransaction, transactions, settings, currencySymbol, categories } = useApp();
   const { user, isGuest } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -34,7 +34,7 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
     setSuggesting(true);
     try {
       const { data, error } = await supabase.functions.invoke('categorize-expense', {
-        body: { description: notes, categories: CATEGORIES[type] },
+        body: { description: notes, categories: categories[type] },
       });
       if (error) throw error;
       if (data?.category) {
@@ -151,7 +151,7 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
               <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES[type].map((c) => (
+                  {categories[type].map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>
