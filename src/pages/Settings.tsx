@@ -74,6 +74,9 @@ const SettingsPage = () => {
         </div>
       </div>
 
+      {/* Categories */}
+      <CategoryManager />
+
       {/* Impulse Alert Mode */}
       <div className="bg-card rounded-lg border border-border p-5 shadow-card space-y-4">
         <h3 className="font-semibold text-card-foreground flex items-center gap-2">
