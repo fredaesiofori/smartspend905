@@ -34,7 +34,7 @@ const TransactionForm = ({ trigger }: { trigger?: React.ReactNode }) => {
     setSuggesting(true);
     try {
       const { data, error } = await supabase.functions.invoke('categorize-expense', {
-        body: { description: notes, categories: CATEGORIES[type] },
+        body: { description: notes, categories: categories[type] },
       });
       if (error) throw error;
       if (data?.category) {
