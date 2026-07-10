@@ -33,6 +33,7 @@ const defaultSettings: UserSettings = {
   currency: 'GHS',
   monthlyBudget: 5000,
   darkMode: false,
+  themeMode: 'system',
   name: 'User',
   impulseMode: true,
 };
@@ -139,10 +140,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           .single();
         if (pError) throw pError;
         if (profile) {
+          const storedMode = (loadFromStorage<string | null>(`smartspend_thememode_${user.id}`, null) as any) || (profile.dark_mode ? 'dark' : 'system');
           setSettings({
             currency: (profile.currency as Currency) || 'GHS',
             monthlyBudget: Number(profile.monthly_budget) || 5000,
             darkMode: profile.dark_mode || false,
+            themeMode: storedMode,
             name: profile.name || 'User',
             impulseMode: (profile as any).impulse_mode !== false,
           });
@@ -156,14 +159,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     loadData();
   }, [user, isGuest]);
 
-  // Apply dark mode
+  // Apply theme (light / dark / system) with system listener
   useEffect(() => {
-    if (settings.darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    const root = document.documentElement;
+    const mode = settings.themeMode || (settings.darkMode ? 'dark' : 'light');
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const isDark = mode === 'dark' || (mode === 'system' && media.matches);
+      root.classList.toggle('dark', isDark);
+    };
+    apply();
+    if (mode === 'system') {
+      media.addEventListener('change', apply);
+      return () => media.removeEventListener('change', apply);
     }
-  }, [settings.darkMode]);
+  }, [settings.themeMode, settings.darkMode]);
 
   // Save guest data to localStorage
   useEffect(() => {
@@ -214,6 +224,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateSettings = useCallback(async (s: Partial<UserSettings>) => {
     const newSettings = { ...settings, ...s };
+    // Keep darkMode in sync with themeMode for backward compatibility
+    if (s.themeMode) {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      newSettings.darkMode = s.themeMode === 'dark' || (s.themeMode === 'system' && media.matches);
+      localStorage.setItem(`smartspend_thememode_${user?.id || 'guest'}`, s.themeMode);
+    }
     setSettings(newSettings);
     if (user && !isGuest) {
       const { error } = await supabase.from('profiles').update({

@@ -41,10 +41,13 @@ export interface Transaction {
   createdAt: string;
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface UserSettings {
   currency: Currency;
   monthlyBudget: number;
   darkMode: boolean;
+  themeMode: ThemeMode;
   name: string;
   impulseMode: boolean;
 }

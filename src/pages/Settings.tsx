@@ -1,11 +1,11 @@
 import { useApp } from '@/contexts/AppContext';
-import { Currency } from '@/types';
+import { Currency, ThemeMode } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Smartphone, ShieldAlert } from 'lucide-react';
+import { Smartphone, ShieldAlert, Sun, Moon, Monitor } from 'lucide-react';
 import CategoryManager from '@/components/CategoryManager';
 
 const currencies: { value: Currency; label: string }[] = [
@@ -65,12 +65,32 @@ const SettingsPage = () => {
       {/* Appearance */}
       <div className="bg-card rounded-lg border border-border p-5 shadow-card space-y-4">
         <h3 className="font-semibold text-card-foreground">Appearance</h3>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-card-foreground">Dark Mode</p>
-            <p className="text-xs text-muted-foreground">Switch between light and dark theme</p>
+        <div>
+          <p className="text-sm font-medium text-card-foreground mb-1">Theme</p>
+          <p className="text-xs text-muted-foreground mb-3">Choose light, dark, or match your device</p>
+          <div className="grid grid-cols-3 gap-2">
+            {([
+              { value: 'light', label: 'Light', Icon: Sun },
+              { value: 'dark', label: 'Dark', Icon: Moon },
+              { value: 'system', label: 'System', Icon: Monitor },
+            ] as { value: ThemeMode; label: string; Icon: typeof Sun }[]).map(({ value, label, Icon }) => {
+              const active = (settings.themeMode || 'system') === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => updateSettings({ themeMode: value })}
+                  className={`flex flex-col items-center gap-1 rounded-lg border p-3 text-xs transition-colors ${
+                    active ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-muted/30 text-muted-foreground hover:bg-muted'
+                  }`}
+                  aria-pressed={active}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              );
+            })}
           </div>
-          <Switch checked={settings.darkMode} onCheckedChange={v => updateSettings({ darkMode: v })} />
         </div>
       </div>
 
