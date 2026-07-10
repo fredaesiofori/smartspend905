@@ -224,6 +224,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const updateSettings = useCallback(async (s: Partial<UserSettings>) => {
     const newSettings = { ...settings, ...s };
+    // Keep darkMode in sync with themeMode for backward compatibility
+    if (s.themeMode) {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      newSettings.darkMode = s.themeMode === 'dark' || (s.themeMode === 'system' && media.matches);
+      localStorage.setItem(`smartspend_thememode_${user?.id || 'guest'}`, s.themeMode);
+    }
     setSettings(newSettings);
     if (user && !isGuest) {
       const { error } = await supabase.from('profiles').update({
