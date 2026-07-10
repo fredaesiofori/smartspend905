@@ -1,11 +1,11 @@
 import { useApp } from '@/contexts/AppContext';
-import { Currency } from '@/types';
+import { Currency, ThemeMode } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Smartphone, ShieldAlert } from 'lucide-react';
+import { Smartphone, ShieldAlert, Sun, Moon, Monitor } from 'lucide-react';
 import CategoryManager from '@/components/CategoryManager';
 
 const currencies: { value: Currency; label: string }[] = [
