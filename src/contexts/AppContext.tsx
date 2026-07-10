@@ -33,6 +33,7 @@ const defaultSettings: UserSettings = {
   currency: 'GHS',
   monthlyBudget: 5000,
   darkMode: false,
+  themeMode: 'system',
   name: 'User',
   impulseMode: true,
 };
